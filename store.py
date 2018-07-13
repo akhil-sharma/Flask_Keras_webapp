@@ -1,6 +1,6 @@
 import urllib.request
 import os
-from zipfile import ZipFile
+import zipfile
 import sys
 
 
@@ -46,7 +46,7 @@ def maybe_download(filename, expected_bytes, force=False):
   return dest_filename
 
 
-train_filename = maybe_download('Convolutional_Neural_Networks.zip', 233832448)
+train_filename = maybe_download('Convolutional_Neural_Networks.zip',233354462, force = False)
 
 
 def maybe_extract(filename, force=False):
@@ -97,11 +97,11 @@ def build_model(training_set_path, test_set_path, common_batch_size = 32, n_epoc
 	classifier.add(Dense(units = 1, activation = 'sigmoid'))
 	
 	# Compiling the CNN
-	classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metric = ['accuracy'])
+	classifier.compile(optimizer = 'adam', loss = 'binary_crossentropy', metrics = ['accuracy'])
 
 	#preparing the datasets
 	training_datagen = ImageDataGenerator(rescale = 1./255, shear_range = 0.2, zoom_range = 0.2,horizontal_flip = True)
-	training_set = train_datagen.flow_from_directory(training_set_path, target_size = (64, 64),batch_size = common_batch_size,class_mode = 'binary')
+	training_set = training_datagen.flow_from_directory(training_set_path, target_size = (64, 64),batch_size = common_batch_size,class_mode = 'binary')
 
 	test_datagen = ImageDataGenerator(rescale = 1./255)
 	test_set = test_datagen.flow_from_directory(test_set_path,target_size = (64,64),batch_size = common_batch_size,class_mode = 'binary')
