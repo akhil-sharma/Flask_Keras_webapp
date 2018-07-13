@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <!--Import Google Icon Font-->
+    <link href="http://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!--Import materialize.css-->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/css/materialize.min.css">
+    <!--Let browser know website is optimized for mobile-->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+
+    <title>Cat or Dog?</title>
+</head>
+<body>
+    <div class="container">
+
+    	<h1 class="center-align">Is it a cat or a Dog?</h1>
+
+  		<form id="upload-file">
+    		<div class="file-field input-field">
+      			<div class="btn">
+        			<span>Upload</span>
+        			<input type="file" name="file">
+      			</div>
+      			<div class="file-path-wrapper">
+        			<input class="file-path validate" type="text">
+      			</div>
+    		</div>
+  		</form>
+  		<button id="predictButton" class="btn center">predict!</button>
+
+        <br>
+        <br>
+        <div id="progress_container" style="visibility:hidden">
+            <div class="progress">
+                <div class="indeterminate"></div>
+            </div>
+        </div>
+        <div id="result" class="center green-text flow-text"></div>
+        <div id="error" class="center red-text flow-text"></div>
+    </div>
+
+    <script type="text/javascript" src="https://code.jquery.com/jquery-2.1.1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
+
+    <script type="text/javascript">
+		$(function() {
+		    $('#predictButton').click(function() {
+		    	var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
+		        var form_data = new FormData($('#upload-file')[0]);
+		        document.getElementById("progress_container").style.visibility = "visible";
+		        $.ajax({
+		            type: 'POST',
+		            url: $SCRIPT_ROOT + '/predict/',
+		            data: form_data,
+		            contentType: false,
+		            cache: false,
+		            processData: false,
+		            async: false,
+		            success: function(data) {
+		                document.getElementById("progress_container").style.visibility = "hidden";
+		                console.log('Success!' + data);
+		                switch (data) {
+                            case "NoFileError":
+                                $('#result').text("");
+                                $('#error').text("Ummm... I didn't receive a file");
+                                break;
+
+                            case "IncorrectTypeError":
+                                $('#result').text("");
+                                $('#error').text("I don't recognize this file format...");
+                                break;
+
+                            default:
+                                $('#result').text(' I believe, this is a ' + data);
+                                $('#error').text("");
+                        }
+		            },
+                    error: function(error){
+		                document.getElementById("progress_container").style.visibility = "hidden";
+		                console.log('Error!' + error);
+		                $('#result').text("")
+                        $('#error').text('There seems to be a problem')
+                    }
+		        });
+		    });
+		});
+
+	</script>
+</body>
+</html>
