@@ -1,9 +1,12 @@
 from flask import Flask, render_template, request, redirect, url_for, send_from_directory
 import os
+import sys
 import numpy as np
 from keras.preprocessing import image
 from werkzeug.utils import secure_filename
-from model.load import init
+
+sys.path.append(os.path.abspath("./model"))
+from model import load
 
 app = Flask(__name__)
 
@@ -11,7 +14,8 @@ UPLOAD_FOLDER = 'UPLOADS'
 app.config['ALLOWED_EXTENSIONS'] = {'png', 'jpg', 'jpeg', 'gif'}
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
-# classifier = init()
+
+model, graph = load.init()
 
 
 def allowed_file(filename):
@@ -46,14 +50,15 @@ def predict():
             test_image = image.load_img(save_url, target_size=(64, 64))
             test_image = image.img_to_array(test_image)
             test_image = np.expand_dims(test_image, axis=0)
+            with graph.as_default():
+                result = model.predict(test_image)
+                print(result)
+                if result[0][0] == 1:
+                    prediction = 'dog'
+                else:
+                    prediction = 'cat'
 
-            result = classifier.predict(test_image)
-            if result[0][0] == 1:
-                prediction = 'dog'
-            else:
-                prediction = 'cat'
-
-            return prediction
+                return prediction
 
 
 if __name__ == '__main__':
