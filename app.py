@@ -4,6 +4,7 @@ import sys
 import numpy as np
 from keras.preprocessing import image
 from werkzeug.utils import secure_filename
+import time
 
 sys.path.append(os.path.abspath("./model"))
 from model import load
@@ -36,6 +37,7 @@ def index():
 
 @app.route('/predict/', methods=['POST'])
 def predict():
+    time.sleep(3)
     if request.method == "POST":
         if 'file' not in request.files:
             return "NoFileError"
@@ -47,7 +49,7 @@ def predict():
             filename = "upload" + "." + filename.rsplit('.', 1)[1]
             save_url = os.path.join(app.config['UPLOAD_FOLDER'], filename)
             image_data.save(save_url)
-            test_image = image.load_img(save_url, target_size=(64, 64))
+            test_image = image.load_img(save_url, target_size=(128,128))
             test_image = image.img_to_array(test_image)
             test_image = np.expand_dims(test_image, axis=0)
             with graph.as_default():

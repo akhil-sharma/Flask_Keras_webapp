@@ -19,18 +19,19 @@
     		<div class="file-field input-field">
       			<div class="btn">
         			<span>Upload</span>
-        			<input type="file" name="file">
+        			<input type="file" name="file" onchange="readURL(this);">
       			</div>
       			<div class="file-path-wrapper">
-        			<input class="file-path validate" type="text">
+        			<input class="file-path validate" type="text" placeholder="Upload an image of a cat or a dog">
       			</div>
     		</div>
   		</form>
+  		<img id="user_upload" src="#" alt="" class="responsive-img">
   		<button id="predictButton" class="btn center">predict!</button>
 
         <br>
         <br>
-        <div id="progress_container" style="visibility:hidden">
+        <div id="progress_container">
             <div class="progress">
                 <div class="indeterminate"></div>
             </div>
@@ -43,11 +44,22 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.98.2/js/materialize.min.js"></script>
 
     <script type="text/javascript">
+        var $loading = $('#progress_container').hide();
+        $(document)
+            .ajaxStart(function () {
+            $loading.show();
+            })
+            .ajaxStop(function () {
+            $loading.hide();
+            });
+
+
+        {#progressBar = document.getElementById("progress_container");#}
 		$(function() {
 		    $('#predictButton').click(function() {
+		        {#progressBar.style.visibility = "visible";#}
 		    	var $SCRIPT_ROOT = {{ request.script_root|tojson|safe }};
 		        var form_data = new FormData($('#upload-file')[0]);
-		        document.getElementById("progress_container").style.visibility = "visible";
 		        $.ajax({
 		            type: 'POST',
 		            url: $SCRIPT_ROOT + '/predict/',
@@ -57,7 +69,7 @@
 		            processData: false,
 		            async: false,
 		            success: function(data) {
-		                document.getElementById("progress_container").style.visibility = "hidden";
+		                {#document.getElementById("progress_container").style.visibility = "hidden";#}
 		                console.log('Success!' + data);
 		                switch (data) {
                             case "NoFileError":
@@ -76,7 +88,7 @@
                         }
 		            },
                     error: function(error){
-		                document.getElementById("progress_container").style.visibility = "hidden";
+		                {#document.getElementById("progress_container").style.visibility = "hidden";#}
 		                console.log('Error!' + error);
 		                $('#result').text("")
                         $('#error').text('There seems to be a problem')
@@ -84,6 +96,17 @@
 		        });
 		    });
 		});
+
+		function readURL(input){
+				var reader = new FileReader();
+
+				reader.onload = function (e){
+					$('#user_upload')
+						.attr('src', e.target.result);
+				};
+				if (reader.readAsDataURL) {reader.readAsDataURL(input.files[0]);}
+				else if (reader.readAsDataurl) {reader.readAsDataurl(input.files[0]);}
+		}
 
 	</script>
 </body>
