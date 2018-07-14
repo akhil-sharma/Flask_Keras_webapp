@@ -1,2 +1,2 @@
-# flask_app
-A simple web application to showcase interesting projects
+# Flask_Keras_webapp
+A simple Flask webapp to host a pretrained keras model.
