@@ -72,7 +72,7 @@ training_set_folder = os.path.join(folder_in_question, "training_set")
 test_set_folder = os.path.join(folder_in_question, "test_set")
 
 
-def build_model(training_set_path, test_set_path, common_batch_size=32, n_epochs=25):
+def build_model(training_set_path, test_set_path, common_batch_size=64, n_epochs=50):
     from keras.models import Sequential
     from keras.layers import Conv2D, MaxPooling2D, Flatten, Dense
     from keras.preprocessing.image import ImageDataGenerator
@@ -88,7 +88,11 @@ def build_model(training_set_path, test_set_path, common_batch_size=32, n_epochs
     classifier.add(Conv2D(32, (5, 5), activation='relu'))
     classifier.add(MaxPooling2D(pool_size=(2, 2)))
 
-    # Adding the third convolutional layer (necessity can be argued upon)
+    # Adding the third convolutional layer
+    classifier.add(Conv2D(32, (5, 5), activation='relu'))
+    classifier.add(MaxPooling2D(pool_size=(2, 2)))
+
+    # Adding the forth convolutional layer (necessity can be argued upon)
     classifier.add(Conv2D(32, (3, 3), activation='relu'))
     classifier.add(MaxPooling2D(pool_size=(2, 2)))
 
